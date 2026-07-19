@@ -11,9 +11,10 @@ We increasingly eat food we didn't cook — takeaways, restaurants, catering —
 ## Interface
 
 <p float="left">
-  <img src="Assets/foodify-1.PNG" width="230" />
-  <img src="Assets/foodify-2.PNG" width="230" />
-  <img src="Assets/foodify-3.PNG" width="230" />
+  <img src="Assets/scan.png" width="180" />
+  <img src="Assets/result.png" width="180" />
+  <img src="Assets/recipe.png" width="180" />
+  <img src="Assets/share.png" width="180" />
 </p>
 
 ## Features

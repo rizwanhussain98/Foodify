@@ -1,103 +1,62 @@
-﻿# Foodify
+# Foodify 🍜
 
-## Abstract
+**Point your camera at a plate of food — get the recipe back.**
 
-This is an android application that is trained to detect multiple food items by just clicking the 
-image of the food. When a user points his smartphone camera to a plate containing his/her 
-meal, the app rapidly recognizes its recipe with the ingredients used. It also indicates the type 
-of cuisine, estimate preparation time used in making that dish, total number of ingredients 
-used and also the whole cooking process by means of the video.
+Foodify is a native Android app that identifies a dish from a single photo using on-device TensorFlow Lite, then returns the recipe name, ingredient list, cooking instructions, estimated prep time, cuisine type, and a video tutorial.
 
+## Why
 
-## Description of the Project
+We increasingly eat food we didn't cook — takeaways, restaurants, catering — so detailed information about what's actually on the plate is hard to come by. Foodify closes that gap: photograph the meal, and the app infers the ingredients and cooking process for you.
 
-Eating patterns and cooking culture have been evolving over time. In the past, food was mostly 
-prepared at home, but nowadays we frequently consume food prepared by third parties (e.g. 
-takeaways, catering and restaurants). Thus, the access to detailed information about prepared 
-food is limited and, as a consequence, it is hard to know precisely what we eat. This application
-will bring a massive ease through which the people are able to infer ingredients and cooking 
-instructions from a prepared meal.
+## Interface
 
+<p float="left">
+  <img src="Assets/foodify-1.PNG" width="230" />
+  <img src="Assets/foodify-2.PNG" width="230" />
+  <img src="Assets/foodify-3.PNG" width="230" />
+</p>
 
-## List of Features:
+## Features
 
-1. Registration
-Users can easily register into the app using their login credentials, or via their email ID. Other 
-than that the app must also offer social media login as users find that pretty easy and use it 
-often.
-2. Try Food Camera (Take Photo)
-User must be able to click the food image and after taking the picture following results must be 
-generated:
-* Show Ingredients name
-* Show Recipe Name
-* Show Recipe (Instructions)
-* Show Preparation Time
-* Show Cuisine type (Continental, Asian others)
-* Video Link of Recipe (With each of the recipes, a video tutorial will be offered to 
-the app users)
-* Show Ingredient count (total number of ingredients used)
-3. Share recipe
-Allow your app users to share their favorite recipes with their friends on social media. T
-4. Save Recipe
-Enable your app users to save their favorite recipes and then access them from anywhere, and 
-anytime
+- **Food recognition camera** — snap a photo and the app classifies the dish on-device, then shows the recipe name, full ingredient list with count, step-by-step instructions, prep time, cuisine type (Continental, Asian, and more), and an embedded video tutorial for the recipe.
+- **Accounts** — register and sign in with email or social login (Firebase Auth).
+- **Save recipes** — bookmark favourites to your account and access them from any device (Firestore-backed).
+- **Share** — send recipes to friends on social media.
 
+## How the recognition works
 
+Classification runs entirely on-device with **TensorFlow Lite** — no image ever leaves the phone.
 
+The classifier is a MobileNetV2-based transfer-learning model (~2 MB, 224×224 float32 input) with a custom dense head, trained on a small self-collected dataset of six South Asian dishes — Aloo Gajar Matar Sabzi, Chicken Shawarma, Gajar Halwa, Gulab Jamun, Samosa, and Noodles. Inference runs on-device via TensorFlow Lite with Android Studio's ML Model Binding, CPU execution — typically well under 200 ms per frame on a mid-range phone.
+The deliberately small class set kept the focus on the end-to-end product: camera pipeline → on-device classification → recipe lookup in Firebase. Extending coverage is a data problem, not an architecture change — swap in a model trained on more classes (e.g. Food-101) and the app works unchanged.
 
-## Interface Preview 
+Recognised dishes are matched against a recipe database in Firebase, which supplies the ingredients, instructions, and video link.
 
-  <p align="center">
-  <img src="https://github.com/MohammadRizwan007/Foodify/blob/master/Assets/foodify-1.PNG" width="400"/>
-  </p>
-  <p align="center">
-  <img src="https://github.com/MohammadRizwan007/Foodify/blob/master/Assets/foodify-2.PNG" width="400"/>
-  </p>
-  <p align="center">
-  <img src="https://github.com/MohammadRizwan007/Foodify/blob/master/Assets/foodify-3.PNG" width="400"/>
-  </p>
-  
-## Tools and Technologies ##
+## Build & run
 
-- Android Studio 3.3+
-- Tensorflow Lite
-- Youtube Player
-- Firebase
+1. Clone the repo and open it in Android Studio.
+2. Add your own `google-services.json` (Firebase console → project settings) to `app/`.
+3. Sync Gradle and run on a device or emulator (minSdk [FILL IN]).
 
-## Tested On ##
+## Tech stack
 
-* Infinix S4
-* Samsung Galaxy Note 2
-* Samsung Galaxy Alpha
-* Samsung Galaxy Prime
-* Samsung Galaxy S6
-* Samsung A10s
-* xiaomi mi a2
+Java · Android SDK · TensorFlow Lite (+ metadata/support libs) · Firebase (Auth, Firestore, Storage, Realtime Database, Analytics) · AndroidX · Android YouTube Player
 
+<details>
+<summary>Key dependencies</summary>
 
-
-## Dependencies
-
-
-``` 
-dependencies {
-...
-   implementation 'androidx.appcompat:appcompat:1.3.1'
-    implementation 'com.google.android.material:material:1.4.0'
-    implementation 'androidx.constraintlayout:constraintlayout:2.1.1'
-    implementation 'org.tensorflow:tensorflow-lite-support:0.1.0'
-    implementation 'org.tensorflow:tensorflow-lite-metadata:0.1.0'
-    testImplementation 'junit:junit:4.+'
-    androidTestImplementation 'androidx.test.ext:junit:1.1.3'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
-
-    //FireBase
-    implementation platform('com.google.firebase:firebase-bom:29.0.0')
-    implementation 'com.google.firebase:firebase-analytics'
-    implementation 'com.google.firebase:firebase-auth'
-    implementation 'com.google.firebase:firebase-firestore:24.0.0'
-    implementation 'com.google.firebase:firebase-storage:20.0.0'
-    implementation 'com.google.firebase:firebase-database:20.0.2'
-    implementation 'com.pierfrancescosoffritti.androidyoutubeplayer:core:10.0.5'
-}
+```gradle
+implementation 'org.tensorflow:tensorflow-lite-support:0.1.0'
+implementation 'org.tensorflow:tensorflow-lite-metadata:0.1.0'
+implementation platform('com.google.firebase:firebase-bom:29.0.0')
+implementation 'com.google.firebase:firebase-auth'
+implementation 'com.google.firebase:firebase-firestore:24.0.0'
+implementation 'com.google.firebase:firebase-storage:20.0.0'
+implementation 'com.google.firebase:firebase-database:20.0.2'
+implementation 'com.pierfrancescosoffritti.androidyoutubeplayer:core:10.0.5'
 ```
+</details>
+
+## Author
+
+**Rizwan Hussain** — [GitHub](https://github.com/rizwanhussain98) · [LinkedIn](https://www.linkedin.com/in/rizwanhussain98/)
